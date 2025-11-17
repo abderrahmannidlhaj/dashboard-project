@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin - Gestion de Produits</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="mon.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <i class="fas fa-chart-line"></i>
+      <h1>Admin Dashboard</h1>
+    </div>
+    <div class="user-info">
+      <span>Administrateur</span>
+      <div class="user-avatar">A</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="dashboard-header">
+      <h2 class="dashboard-title">Gestion des Produits</h2>
+      <button class="btn btn-primary" id="export-btn">
+        <i class="fas fa-download"></i> Exporter les données
+      </button>
+    </div>
+
+    <!-- Cartes de statistiques -->
+    <div class="stats-cards">
+      <div class="stat-card total">
+        <i class="fas fa-boxes"></i>
+        <div class="stat-value" id="total-products">0</div>
+        <div class="stat-label">Total Produits</div>
+      </div>
+      <div class="stat-card available">
+        <i class="fas fa-check-circle"></i>
+        <div class="stat-value" id="available-products">0</div>
+        <div class="stat-label">Disponibles</div>
+      </div>
+      <div class="stat-card low-stock">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="stat-value" id="low-stock-products">0</div>
+        <div class="stat-label">Stock Faible</div>
+      </div>
+      <div class="stat-card out-of-stock">
+        <i class="fas fa-times-circle"></i>
+        <div class="stat-value" id="out-of-stock-products">0</div>
+        <div class="stat-label">Rupture</div>
+      </div>
+    </div>
+
+    <!-- Formulaire d'ajout -->
+    <div class="form-container">
+      <h3 class="form-title" id="form-title">Ajouter un produit</h3>
+      <form id="product-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="title"><i class="fas fa-heading"></i> Titre du produit</label>
+            <input type="text" id="title" class="form-control" placeholder="Nom du produit" required>
+          </div>
+          <div class="form-group">
+            <label for="price"><i class="fas fa-euro-sign"></i> Prix (€)</label>
+            <input type="number" id="price" class="form-control" placeholder="Prix" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="quantity"><i class="fas fa-cubes"></i> Quantité</label>
+            <input type="number" id="quantity" class="form-control" placeholder="Quantité en stock" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="category"><i class="fas fa-tags"></i> Catégorie</label>
+            <select id="category" class="form-control" required>
+              <option value="">Sélectionner une catégorie</option>
+              <option value="electronique">Électronique</option>
+              <option value="vetements">Vêtements</option>
+              <option value="maison">Maison</option>
+              <option value="sport">Sport</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="description"><i class="fas fa-align-left"></i> Description</label>
+            <textarea id="description" class="form-control" placeholder="Description du produit" rows="3" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="image-upload"><i class="fas fa-image"></i> Image du produit</label>
+            <div class="file-upload-container">
+              <input type="file" id="image-upload" class="file-input" accept="image/*">
+              <label for="image-upload" class="file-upload-label">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Choisir une image</span>
+              </label>
+              <div id="image-preview" class="image-preview"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="available"><i class="fas fa-toggle-on"></i> Statut</label>
+            <select id="available" class="form-control" required>
+              <option value="true">Disponible</option>
+              <option value="false">Indisponible</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
+          <i class="fas fa-plus-circle"></i> Ajouter le produit
+        </button>
+        <button type="button" class="btn btn-secondary btn-block" id="cancel-btn" style="display: none; margin-top: 10px;">
+          <i class="fas fa-times"></i> Annuler
+        </button>
+      </form>
+    </div>
+
+    <!-- Tableau des produits -->
+    <div class="table-container">
+      <div class="table-header">
+        <h3 class="table-title">Liste des produits</h3>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="search-input" placeholder="Rechercher un produit...">
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Produit</th>
+              <th>Catégorie</th>
+              <th>Prix</th>
+              <th>Quantité</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="product-list">
+            <!-- Les produits seront ajoutés ici dynamiquement -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal de confirmation -->
+  <div id="confirmation-modal" class="modal">
+    <div class="modal-content">
+      <h3>Confirmation</h3>
+      <p id="modal-message">Êtes-vous sûr de vouloir supprimer ce produit ?</p>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn btn-secondary">Annuler</button>
+        <button id="modal-confirm" class="btn btn-danger">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIEN VERS LE FICHIER JS -->
+  <script src="mon.js"></script>
+</body>
+</html>
